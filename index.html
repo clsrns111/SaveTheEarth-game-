@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Gemunu+Libre:wght@300&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css"
+      integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body>
+    <div class="earth">
+      <div class="earth--shadow"></div>
+    </div>
+
+    <div class="stars"></div>
+
+    <div class="modal">
+      <div class="modal_text">
+        <div>
+          <span>Score:</span>
+          <span class="modal_score">0</span>
+        </div>
+        <hr />
+        <div>
+          <span>Total Score:</span>
+          <span class="modal_total_score">0</span>
+        </div>
+      </div>
+
+      <div class="item_container">
+        <p class="alert">업그레이드 할수록 난이도가 올라갑니다.</p>
+        <div class="item1">
+          <i id="power" class="fas fa-hand-rock"></i>
+          <hr />
+          <small class="t">Power Up</small>
+          <br />
+          <small><i class="fas fa-won-sign"></i> 2000 </small>
+        </div>
+
+        <div class="item2">
+          <i id="speed" class="fas fa-bolt"></i>
+          <hr />
+          <small class="t">Speed Up</small>
+          <br />
+          <small><i class="fas fa-won-sign"></i>3000 </small>
+        </div>
+
+        <div class="item3">
+          <i id="multi" class="fas fa-ellipsis-h"></i>
+          <hr />
+          <small class="t">multiple missiles</small>
+          <br />
+          <small><i class="fas fa-won-sign"></i> 4000 </small>
+        </div>
+      </div>
+
+      <button id="restart">Re Start</button>
+    </div>
+
+    <div class="start">
+      <h1>Save the Earth</h1>
+    </div>
+    <div class="start_btn">
+      <button id="start_btn">Start</button>
+    </div>
+
+    <div class="score_text2"><span>Score:</span> <span id="score">0</span></div>
+    <div class="score_text">
+      <span>Total Score:</span> <span id="total_score">0</span>
+    </div>
+
+    <canvas id="canvas"></canvas>
+    <script src="script.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"
+      integrity="sha512-UxP+UhJaGRWuMG2YC6LPWYpFQnsSgnor0VUF3BHdD83PS/pOpN+FYbZmrYN+ISX8jnvgVUciqP/fILOXDjZSwg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+  </body>
+</html>
