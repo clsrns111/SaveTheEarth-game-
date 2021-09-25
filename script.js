@@ -3,6 +3,9 @@ const start_btn = document.getElementById("start_btn");
 const re_start_btn = document.getElementById("restart");
 const score_text = document.getElementById("score");
 const modal_score = document.querySelector(".modal_score");
+const sound_i = document.getElementById("sound_i");
+const desc = document.querySelector(".desc");
+const a = document.querySelector(".alert");
 const modal_total_score = document.querySelector(".modal_total_score");
 const modal = document.querySelector(".modal");
 const power = document.querySelector(".item1");
@@ -20,8 +23,32 @@ start_btn.addEventListener("click", () => {
   init();
 });
 
+//sound
+let bgm = new Audio();
+let pop = new Audio();
+
+bgm.src = "bgm.mp3";
+pop.src = "pop.mp3";
+
+bgm.muted = true;
+pop.muted = true;
+
+sound_i.addEventListener("click", () => {
+  if (bgm.muted) {
+    bgm.muted = false;
+    pop.muted = false;
+    bgm.play();
+    bgm.loop = true;
+    bgm.volume = 0.4;
+  } else {
+    bgm.muted = true;
+    pop.muted = true;
+  }
+});
+
 canvas.width = innerWidth;
 canvas.height = innerHeight;
+
 let score = 0;
 let total_score = localStorage.getItem("score");
 
@@ -57,13 +84,13 @@ class Projectile {
     ctx.fill();
   }
 
-  update(a, b) {
+  update() {
     this.draw();
     this.x = this.x + this.velocity.x;
     this.y = this.y + this.velocity.y;
     if (option.includes("speed")) {
-      this.x = this.x + this.velocity.x * 2;
-      this.y = this.y + this.velocity.y * 2;
+      this.x = this.x + this.velocity.x * 1.2;
+      this.y = this.y + this.velocity.y * 1.2;
     }
   }
 }
@@ -77,6 +104,7 @@ class Particle {
     this.velocity = velocity;
     this.alpha = 1;
   }
+
   draw() {
     ctx.save();
     ctx.globalAlpha = this.alpha;
@@ -86,6 +114,7 @@ class Particle {
     ctx.fill();
     ctx.restore();
   }
+
   update() {
     this.draw();
     this.velocity.x *= 0.99;
@@ -109,74 +138,58 @@ class Enemy {
     ctx.beginPath();
     ctx.fillStyle = this.color;
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-    // ctx.shadowColor = "black";
-    // ctx.shadowBlur = 10;
-    // ctx.lineWidth = 4;
-    ctx.stroke();
-
     ctx.fill();
-  }
 
-  red() {
-    ctx.beginPath();
-    ctx.arc(this.x - 1, this.y - 1, this.radius + 10, 0, Math.PI * 2, false);
-    ctx.fillStyle = "rgba(100,100,100,1)";
-    ctx.fill();
-  }
-
-  crater1() {
-    ctx.beginPath();
-    ctx.arc(
-      this.x + 12 / this.draw.radius,
-      this.y + 6,
-      5,
-      0,
-      Math.PI * 2,
-      false
-    );
-    ctx.shadowColor = "black";
-    ctx.stroke();
-
-    ctx.fill();
-  }
-
-  crater2() {
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, 5, 0, Math.PI * 2, false);
-    ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
-    ctx.fill();
-  }
-
-  crater3() {
-    ctx.beginPath();
-    ctx.arc(this.x - 8, this.y - 8, 5, 0, Math.PI * 2, false);
-    ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
-    ctx.fill();
+    this.hole();
   }
 
   update() {
     this.draw();
-    this.crater1();
-    // this.crater2();
-    // this.crater3();
     this.x = this.x + this.velocity.x;
     this.y = this.y + this.velocity.y;
   }
+
+  hole() {
+    ctx.beginPath();
+    ctx.fillStyle = "rgba(0,0,0,0.1)";
+    ctx.arc(
+      this.x - (Math.random() - 13),
+      this.y - (Math.random() - 13),
+      this.radius / 6,
+      0,
+      Math.PI * 2,
+      false
+    );
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.fillStyle = "rgba(0,0,0,0.1)";
+    ctx.arc(
+      this.x + (Math.random() - 17),
+      this.y + (Math.random() - 17),
+      this.radius / 3,
+      0,
+      Math.PI * 2,
+      false
+    );
+    ctx.fill();
+  }
 }
+
 const point_x = canvas.width / 2;
 const point_y = canvas.height / 2;
 let projectiles = [];
 let enemies = [];
 let particles = [];
+let animationId;
+
 const player = new Player(point_x, point_y, 99, "red");
 player.draw();
-let animationId;
 
 function animate() {
   animationId = requestAnimationFrame(() => this.animate());
-  ctx.fillStyle = "rgba(0,0,0,0.1)";
+  ctx.fillStyle = "black";
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  player.draw();
 
   particles.forEach((el, i) => {
     if (el.alpha <= 0) {
@@ -188,18 +201,25 @@ function animate() {
 
   enemies.forEach((ene_el, ene_i) => {
     ene_el.update();
+
     const dist = Math.hypot(ene_el.x - player.x, ene_el.y - player.y);
+
     if (dist - ene_el.radius - player.radius < 1) {
       if (start_btn.className === "hidden") {
         cancelAnimationFrame(animationId);
+        bgm.pause();
         localStorage.setItem("score", total_score);
         modal_total_score.textContent = total_score;
         modal_score.textContent = score;
         modal.style.visibility = "visible";
       }
     }
+
     projectiles.forEach((pro_el, pro_i) => {
-      pro_el.update();
+      if (pro_el) {
+        pro_el.update();
+      }
+
       if (
         pro_el.radius + pro_el.x < 0 ||
         pro_el.radius + pro_el.y < 0 ||
@@ -208,8 +228,18 @@ function animate() {
       ) {
         projectiles.splice(pro_i, 1);
       }
+
       const dist = Math.hypot(ene_el.x - pro_el.x, ene_el.y - pro_el.y);
+      if (dist - ene_el.radius - pro_el.radius < 1.5) {
+        setTimeout(() => {
+          pop.play();
+        }, 0);
+      }
+
       if (dist - ene_el.radius - pro_el.radius < 1) {
+        setTimeout(() => {
+          pop.play();
+        }, 0);
         for (let i = 0; i < ene_el.radius * 2; i++) {
           particles.push(
             new Particle(
@@ -229,20 +259,26 @@ function animate() {
           gsap.to(ene_el, {
             radius: ene_el.radius / 2,
           });
+
           total_score += 10;
           score += +10;
           total_score_text.textContent = total_score;
           score_text.textContent = score;
         } else {
-          enemies.splice(ene_i, 1);
+          setTimeout(() => {
+            console.log(ene_i, pro_i);
 
-          total_score += 20;
-          score += +20;
-          total_score_text.textContent = total_score;
-          score_text.textContent = score;
+            enemies.splice(ene_i, 1);
+            total_score += 20;
+            score += +20;
+            total_score_text.textContent = total_score;
+            score_text.textContent = score;
+          }, 0);
         }
         if (!option.includes("power")) {
-          projectiles.splice(pro_i, 1);
+          setTimeout(() => {
+            projectiles.splice(pro_i, 1);
+          }, 0);
         }
       }
     });
@@ -267,31 +303,35 @@ function spawnEnemies() {
     const color = (ctx.fillStyle =
       "hsl(" + 360 * Math.random() + ", 50%, 50%)");
     let size = Math.random() * 30 + 20;
-    if (option.length == 3) size = Math.random() * 50 + 20;
+    if (option.length == 3) size = Math.random() * 35 + 20;
     enemies.push(new Enemy(respawn_x, respawn_y, size, color, { x, y }));
   }
+
   const data = JSON.parse(localStorage.getItem("option"));
   option = data ? data : [];
 
-  if (option.length == 3) {
+  if (option.length == 3 || total_score >= 10000) {
     console.log("max");
     setInterval(() => {
       meteos();
-    }, 600);
+    }, 800);
   }
 
-  if (option.length == 2) {
+  if (option.length == 2 || total_score >= 3500) {
     setInterval(() => {
       console.log("speed Up");
 
       meteos();
-    }, 1500);
+    }, 1300);
   }
-  if (option.length == 1) {
+  if (option.length == 1 || total_score >= 2000) {
     setInterval(() => {
       meteos();
-    }, 1800);
+    }, 1500);
   }
+  setInterval(() => {
+    meteos();
+  }, 1800);
 }
 
 function init() {
@@ -302,8 +342,14 @@ function init() {
 
 addEventListener("click", (e) => {
   const angle = Math.atan2(e.clientY - point_y, e.clientX - point_x);
-  const angle1 = Math.atan2(e.clientY - point_y - 45, e.clientX - point_x - 45);
-  const angle2 = Math.atan2(e.clientY - point_y + 45, e.clientX - point_x + 45);
+  const angle1 = Math.atan2(
+    e.clientY - point_y - 120,
+    e.clientX - point_x - 120
+  );
+  const angle2 = Math.atan2(
+    e.clientY - point_y + 120,
+    e.clientX - point_x + 120
+  );
   const x = Math.cos(angle);
   const y = Math.sin(angle);
   const x1 = Math.cos(angle1);
@@ -314,19 +360,21 @@ addEventListener("click", (e) => {
   if (start_btn.className === "hidden") {
     if (option.includes("multi")) {
       projectiles.push(
+        /* new Projectile(point_x, point_y, 5, "white", {
+          x: x,
+          y: x * -1,
+        }), */
         new Projectile(point_x, point_y, 5, "white", { x, y }),
-        new Projectile(point_x, point_y, 5, "white", { x: x1, y: y1 }),
-        new Projectile(point_x, point_y, 5, "white", { x: x2, y: y2 })
+        new Projectile(point_x, point_y, 5, "white", {
+          x: x * -1,
+          y: y * -1,
+        })
       );
     } else {
       projectiles.push(new Projectile(point_x, point_y, 5, "white", { x, y }));
     }
   }
 });
-
-animate();
-
-spawnEnemies();
 
 ///modal
 
@@ -351,64 +399,90 @@ addEventListener("load", function (e) {
   total_score_text.textContent = total_score;
   const data = JSON.parse(localStorage.getItem("option"));
   option = data ? data : [];
+  if (option.length == 3) {
+    const up_alter = document.querySelector(".up_alter");
 
+    up_alter.style.fontSize = "20px";
+    up_alter.style.textAlign = "center";
+    up_alter.textContent = "모든 업그레이드가 완료되었습니다.";
+  }
   hiddenItem();
 });
 
+animate();
+spawnEnemies();
+
 function alert() {
-  const a = document.querySelector(".alert");
   a.textContent = "스코어가 부족합니다.";
   a.style.color = "red";
 }
 
 power.addEventListener("click", () => {
-  if (total_score >= 2000) {
-    total_score -= 2000;
+  if (total_score >= 000) {
+    total_score -= 3000;
     total_score_text.textContent = total_score;
     modal_total_score.textContent = total_score;
     option.push("power");
     localStorage.setItem("option", JSON.stringify(option));
     localStorage.setItem("score", total_score);
     hiddenItem();
+    a.textContent = "업그레이드 완료.";
+    a.style.color = "#0d8593";
   } else {
     alert();
   }
 });
 
+power.addEventListener("mouseenter", () => {
+  desc.textContent = "미사일이 운석을 뚫고 지나갑니다.";
+});
+
 speed.addEventListener("click", () => {
-  if (total_score >= 3000) {
-    total_score -= 3000;
+  if (total_score <= 0) {
+    total_score -= 2000;
     total_score_text.textContent = total_score;
     modal_total_score.textContent = total_score;
     option.push("speed");
     localStorage.setItem("option", JSON.stringify(option));
     localStorage.setItem("score", total_score);
     hiddenItem();
+    a.textContent = "업그레이드 완료.";
+    a.style.color = "#0d8593";
   } else {
     alert();
   }
 });
 
+speed.addEventListener("mouseenter", () => {
+  desc.textContent = "미사일의 발사속도가 빨라집니다.";
+});
+
 multi.addEventListener("click", () => {
-  if (total_score >= 4000) {
-    total_score -= 4000;
+  if (total_score <= 0) {
+    total_score -= 5000;
     total_score_text.textContent = total_score;
     modal_total_score.textContent = total_score;
     option.push("multi");
     localStorage.setItem("option", JSON.stringify(option));
     localStorage.setItem("score", total_score);
     hiddenItem();
+    a.textContent = "업그레이드 완료.";
+    a.style.color = "#0d8593";
   } else {
     alert();
   }
 });
 
+multi.addEventListener("mouseenter", () => {
+  desc.textContent = "한번에 미사일이 2개 발사됩니다.";
+});
+
 re_start_btn.addEventListener("click", () => {
   modal.style.visibility = "hidden";
-
-  init();
-  spawnEnemies();
-  animate();
   score = 0;
   score_text.textContent = score;
+  bgm.play();
+  bgm.loop = true;
+  init();
+  animate();
 });

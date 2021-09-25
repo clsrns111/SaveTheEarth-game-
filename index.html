@@ -29,7 +29,10 @@
 
     <div class="stars"></div>
 
+    <div class="sound"><i id="sound_i" class="fas fa-volume-down"></i></div>
+
     <div class="modal">
+      <h2>Game Over</h2>
       <div class="modal_text">
         <div>
           <span>Score:</span>
@@ -43,13 +46,14 @@
       </div>
 
       <div class="item_container">
-        <p class="alert">업그레이드 할수록 난이도가 올라갑니다.</p>
+        <h4>업그레이드</h4>
+        <h3 class="up_alter">&nbsp;</h3>
         <div class="item1">
           <i id="power" class="fas fa-hand-rock"></i>
           <hr />
           <small class="t">Power Up</small>
           <br />
-          <small><i class="fas fa-won-sign"></i> 2000 </small>
+          <small><i class="fas fa-won-sign"></i> 3000 </small>
         </div>
 
         <div class="item2">
@@ -57,17 +61,21 @@
           <hr />
           <small class="t">Speed Up</small>
           <br />
-          <small><i class="fas fa-won-sign"></i>3000 </small>
+          <small><i class="fas fa-won-sign"></i>2000 </small>
         </div>
 
         <div class="item3">
-          <i id="multi" class="fas fa-ellipsis-h"></i>
+          <span id="multi">
+            <i class="fas fa-circle"></i><i class="fas fa-circle"></i>
+          </span>
           <hr />
           <small class="t">multiple missiles</small>
           <br />
-          <small><i class="fas fa-won-sign"></i> 4000 </small>
+          <small><i class="fas fa-won-sign"></i> 5000 </small>
         </div>
+        <small class="alert">업그레이드 할 수록 난이도가 높아집니다.</small>
       </div>
+      <h4 class="desc">&nbsp;</h4>
 
       <button id="restart">Re Start</button>
     </div>
