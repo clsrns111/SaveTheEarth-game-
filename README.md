@@ -13,7 +13,8 @@
 ![Honeycam 2021-09-26 11-09-26](https://user-images.githubusercontent.com/71580773/134790888-aa38bf93-08c7-4296-9a03-cd4e53f2fa6f.gif)
                                                            <게임오버 시 화면>
 
-
+게임 사이트: 
+https://goofy-swirles-5926f7.netlify.app/
 
 코드 참조:
 https://www.youtube.com/watch?v=eI9idPTT0c4&t=5469s&ab_channel=ChrisCourses
